@@ -7,7 +7,7 @@ const Footer = () => {
     <div className='bg-dark'>
       <footer className='container p-2'>
         <div className='c-div'>
-          <h1><i class="fa-solid fa-music me-2"></i>Media player</h1>
+          <h1><i className="fa-solid fa-music me-2"></i>Media player</h1>
           <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Corporis beatae dolore quaerat fugiat tenetur i</p>
           <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit</p>
           <p>Currently v5-3-2.0</p>
@@ -28,14 +28,14 @@ const Footer = () => {
           <h1>Contact</h1>
           <div className='inp-div'>
             <input type="text" className='form-control'/>
-            <button className='btn btn-primary'><i class="fa-solid fa-arrow-right"></i></button>
+            <button className='btn btn-primary'><i className="fa-solid fa-arrow-right"></i></button>
           </div>
           <div className='i-div'>
-          <i class="fa-brands fa-twitter"></i>
-          <i class="fa-brands fa-instagram"></i>
-          <i class="fa-brands fa-facebook"></i>
-          <i class="fa-brands fa-linkedin"></i>
-          <i class="fa-brands fa-github"></i>
+          <i className="fa-brands fa-twitter"></i>
+          <i className="fa-brands fa-instagram"></i>
+          <i className="fa-brands fa-facebook"></i>
+          <i className="fa-brands fa-linkedin"></i>
+          <i className="fa-brands fa-github"></i>
           </div>
         </div>
       </footer>

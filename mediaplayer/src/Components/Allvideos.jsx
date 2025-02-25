@@ -1,57 +1,105 @@
-import React, { useState } from 'react'
-import Button from 'react-bootstrap/Button';
+import React, { useEffect } from 'react'
+
 import Card from 'react-bootstrap/Card';
+import { useState } from 'react';
+import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Form from 'react-bootstrap/Form';
+import { addHistory, deleteVideo, getAllVideo } from '../services/AllAPI';
 
+const Allvideos = ({videResponce,videoDeleteResponce}) => {
 
+       const [show, setShow] = useState(false);
+       const [data,setData]=useState([])
 
-const Allvideos = () => {
-     const [show, setShow] = useState(false);
+       const [selectedVideo,setSelectedVideo]=useState(null)
     
         const handleClose = () => setShow(false);
-        const handleShow = () => setShow(true);
-      
-  return (
-    <>
-    <div><h2>All Videos</h2>
-    <Card style={{ width: '18rem' }} onClick={handleShow}>
-      <Card.Img className='rounded' variant="top" src="https://hips.hearstapps.com/hmg-prod/images/racing-yellow-911-gt3rs-weissach-package-047-dsc07430-1677506360.jpg?crop=0.668xw:1.00xh;0.197xw,0&resize=1200:*" />
-      <Card.Body>
-        <div className='d-flex justify-content-between align-items-center'>
-        <Card.Title>Card Title</Card.Title>
-        <button className='btn'><i className="fa-solid fa-trash text-warning" ></i></button>
-        </div>
+        const handleShow = async(video) => {
+          let {videoCaption,videoLink}=video
+          let currentDate=new Date()
+          let formatedDate=currentDate.toLocaleString('en-IN',{timeZoneName:'short'})
+          let payload={videoCaption,videoLink,formatedDate}
+          try {
+            await addHistory(payload)
+          } catch (error) {
+            console.log(error)
+          }
 
-      </Card.Body>
-    </Card>
+          setSelectedVideo(video)
+          setShow(true)
+
+
+
+        };
+
+
+        const getVideo=async()=>{
+          try {
+            const responce=await getAllVideo()
+            setData(responce.data)
+
+          } catch (error) {
+            alert("Error")
+          }
+          
+        }
+
+        const deleteVideos=async(id)=>{
+          try {
+            await deleteVideo(id)
+            getVideo()
+          } catch (error) {
+           console.log(error) 
+          }
+        }
+
+        const onVideoDrag=async(event,id)=>{
+          console.log(event)
+          event.dataTransfer.setData("videoId",id)
+          
+        }
+
+
+
+
+        useEffect(()=>{
+          getVideo()
+        },[videResponce,videoDeleteResponce])
+
+
+  return (
+    <> <div>
+      <h1 className='fw-bold'>ALL VIDEOS</h1>
+      <div className='d-flex flex-wrap gap-2 '>
+      {data.map((a,key )=>(
+        <Card draggable={true} onDragStart={(e)=>onVideoDrag(e,a.id)} key={key+1}  style={{ width: '220px' }} className='mb-2' >
+        <Card.Img variant="top" src={a.videoImageUrl} style={{height:'200px',width:'100%'}} onClick={()=>handleShow(a)}/>
+        <Card.Body>
+          <div className='d-flex justify-content-between align-items-center'>
+          <Card.Title>{a.videoCaption}</Card.Title>
+          <button className='btn btn-light' onClick={()=>deleteVideos(a.id)}><i className="fa-solid fa-trash text-danger"></i></button>
+          </div>
+         
+        </Card.Body>
+      </Card>
+      ))}
+      </div>
     </div>
-     
-     <div className='d-flex align-items-center gap-2'>
-         <h2>Upload New Video</h2>
-         <button className='btn btn-danger' style={{borderRadius:"50%"}} onClick={handleShow}><i className="fa-solid fa-plus"></i></button>
-     </div>
-     <Modal show={show} onHide={handleClose} size='lg'>
-     <Modal.Header closeButton>
-       <Modal.Title>Caption</Modal.Title>
-     </Modal.Header>
-     <Modal.Body>
-     <iframe width="100%" height="315" src="https://www.youtube.com/embed/478Ay_lNpT4?si=Ox45JZHRvFODqPpL&autoplay=1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
- 
-     
-     </Modal.Body>
- 
-     <Modal.Footer>
-       <Button variant="secondary" onClick={handleClose}>
-         Close
-       </Button>
-       <Button variant="primary" onClick={handleClose}>
-         Save Changes
-       </Button>
-     </Modal.Footer>
-   </Modal>
-   </>
+       {selectedVideo&&(
+        <Modal show={show} onHide={handleClose} size='lg'>
+        <Modal.Header closeButton>
+          <Modal.Title>{selectedVideo.videoCaption}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className='border border-1 border-warning'>
+        <iframe width="100%" height="315" src={`https://www.youtube.com/embed/${selectedVideo.videoLink}&autoplay=1`} title="YouTube video player" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe>
+        </Modal.Body>
+        
+      </Modal>
+       )}
+
+    </>
 
   )
 }
